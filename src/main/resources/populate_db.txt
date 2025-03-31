@@ -1,0 +1,36 @@
+
+
+
+
+        //Faker().course()
+		//courseRepository.saveAll(courses.map(::toCourse))
+
+
+
+		val savedCourse = courseRepository.findAll().toList().map { it.toDTO() }
+
+		repeat(1000) {
+
+			val faker = Faker()
+			val email = if (it % 2 == 0) faker.student().email().emailWithBothNameAndAge()
+			else if (it % 3 == 0) faker.student().email().emailWithFirstName()
+			else if (it % 5 == 0) faker.student().email().emailWithLastName()
+			else faker.student().email().emailWithBothName()
+			val mobile = if (it % 3 == 0) faker.student().mobile().landLine()
+			else faker.student().mobile().mobile()
+			val department = faker.student().department()
+			val existingCourses = savedCourse.filter { it.department == department }
+			val student = Student(
+				firstName = faker.student().name().firstName(),
+				lastName = faker.student().name().lastName(),
+				dateOfBirth = faker.student().name().dateOfBirth(),
+				gender = faker.student().name().gender(),
+				email = email,
+				guardianMobile = mobile,
+				address = "",
+				program = faker.student().program(),
+				department = department,
+				course = existingCourses.map(::toCourse)
+			)
+			studentRepository.save(student)
+		}
