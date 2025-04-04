@@ -6,6 +6,8 @@ import com.example.student.management.domain.entities.Gender
 import com.example.student.management.domain.entities.Student
 import com.example.student.management.domain.mappers.toDTO
 import com.example.student.management.domain.mappers.toStudent
+import com.example.student.management.exception.StudentAlreadyExistException
+import com.example.student.management.exception.StudentNotFoundException
 import com.example.student.management.repository.CourseRepository
 import com.example.student.management.repository.StudentRepository
 import org.assertj.core.api.Assertions.assertThat
@@ -115,8 +117,9 @@ class StudentServiceTest  @Autowired constructor (
 
     @Test
     fun `test that getStudent returns null if student a student doesn't exist`() {
-        val student = underTest.getStudent(3)
-        assertThat(student).isNull()
+        assertThrows<StudentNotFoundException> {
+            underTest.getStudent(3)
+        }
     }
 
 
@@ -143,7 +146,7 @@ class StudentServiceTest  @Autowired constructor (
 
     @Test
     fun `test that saveStudent will throw an exception if an exist user is passed in`() {
-        assertThrows<IllegalStateException> {
+        assertThrows<StudentAlreadyExistException> {
             // testStudentB was inserted on setUp so it now has the id = 1
             underTest.saveStudent(testStudentA().copy(id = 1))
         }
@@ -154,7 +157,7 @@ class StudentServiceTest  @Autowired constructor (
     @Test
     fun `test that updateStudent persist in the database`() {
         val saveStudent = underTest.updateStudent(testStudentB().copy(id = 1, firstName = "Mark", lastName = "Lee"))
-        assertThat(saveStudent!!.id).isNotNull()
+        assertThat(saveStudent.id).isNotNull()
         val recalledStudent = studentRepository.findByIdOrNull(saveStudent.id)
         assertThat(recalledStudent).isNotNull
         assertThat(recalledStudent?.toDTO()?.validate()).isEqualTo(
@@ -164,7 +167,7 @@ class StudentServiceTest  @Autowired constructor (
 
     @Test
     fun `test that updateStudent throws an exception if no student with the given id do not exist`() {
-        assertThrows<IllegalStateException> {
+        assertThrows<StudentNotFoundException> {
             underTest.updateStudent(testStudentB().copy(id = 3))
         }
     }

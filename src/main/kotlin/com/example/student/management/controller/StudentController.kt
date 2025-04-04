@@ -3,6 +3,7 @@ package com.example.student.management.controller
 import com.example.student.management.domain.dto.CourseDTO
 import com.example.student.management.domain.dto.StudentDTO
 import com.example.student.management.service.StudentService
+import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -30,9 +31,7 @@ class StudentController(private val studentService: StudentService) {
 
     @GetMapping(path = ["/{id}"])
     fun getStudentById(@PathVariable("id") id: Int): ResponseEntity<StudentDTO> {
-        return studentService.getStudent(id.toLong())?.let {
-            ResponseEntity(it, HttpStatus.OK)
-        } ?: ResponseEntity(HttpStatus.NOT_FOUND)
+        return ResponseEntity(studentService.getStudent(id.toLong()), HttpStatus.OK)
     }
 
     @GetMapping(path = ["/{id}/courses"])
@@ -43,7 +42,7 @@ class StudentController(private val studentService: StudentService) {
     }
 
     @PostMapping
-    fun enrollStudent(@RequestBody student: StudentDTO): ResponseEntity<StudentDTO> {
+    fun enrollStudent(@Valid @RequestBody student: StudentDTO): ResponseEntity<StudentDTO> {
         return try {
             val newStudent = studentService.saveStudent(student)
             ResponseEntity(newStudent, HttpStatus.OK)
@@ -53,7 +52,7 @@ class StudentController(private val studentService: StudentService) {
     }
 
     @PostMapping(path = ["/update"])
-    fun updateStudent(@RequestBody student: StudentDTO): ResponseEntity<StudentDTO> {
+    fun updateStudent(@Valid @RequestBody student: StudentDTO): ResponseEntity<StudentDTO> {
         return try {
             val newStudent = studentService.updateStudent(student)
             ResponseEntity(newStudent, HttpStatus.OK)

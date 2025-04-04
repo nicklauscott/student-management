@@ -11,13 +11,13 @@ interface StudentService {
 
     fun getAllStudent(): List<StudentDTO>
 
-    fun getStudent(id: Long): StudentDTO?
+    fun getStudent(id: Long): StudentDTO
 
     fun getStudentCourse(id: Long): List<CourseDTO>?
 
     fun saveStudent(studentDTO: StudentDTO): StudentDTO?
 
-    fun updateStudent(studentDTO: StudentDTO): StudentDTO?
+    fun updateStudent(studentDTO: StudentDTO): StudentDTO
 
     fun enrollStudentToCourse(id: Long, courses: List<CourseDTO>): StudentDTO?
 

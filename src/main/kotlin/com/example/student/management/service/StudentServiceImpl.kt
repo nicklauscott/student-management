@@ -6,9 +6,12 @@ import com.example.student.management.domain.dto.StudentDTO
 import com.example.student.management.domain.mappers.toCourse
 import com.example.student.management.domain.mappers.toDTO
 import com.example.student.management.domain.mappers.toStudent
+import com.example.student.management.exception.StudentAlreadyExistException
+import com.example.student.management.exception.StudentNotFoundException
 import com.example.student.management.repository.CourseRepository
 import com.example.student.management.repository.StudentRepository
 import jakarta.transaction.Transactional
+import jakarta.validation.Validator
 import org.springframework.boot.CommandLineRunner
 import org.springframework.data.domain.Page
 import org.springframework.data.repository.findByIdOrNull
@@ -18,7 +21,8 @@ import kotlin.jvm.optionals.getOrNull
 @Service
 class StudentServiceImpl(
     private val studentRepository: StudentRepository,
-    private val courseRepository: CourseRepository
+    private val courseRepository: CourseRepository,
+    private val validator: Validator
 ): StudentService {
 
     override fun getStudentsByPagingAndSorting(
@@ -32,8 +36,11 @@ class StudentServiceImpl(
         return studentRepository.findAll().map { it.toDTO() }
     }
 
-    override fun getStudent(id: Long): StudentDTO? {
-        return studentRepository.findById(id).getOrNull()?.toDTO()
+    override fun getStudent(id: Long): StudentDTO {
+        if (!studentRepository.existsById(id)) {
+            throw StudentNotFoundException(id)
+        }
+        return studentRepository.findById(id).get().toDTO()
     }
 
     override fun getStudentCourse(id: Long): List<CourseDTO>? {
@@ -42,13 +49,16 @@ class StudentServiceImpl(
     }
 
     override fun saveStudent(studentDTO: StudentDTO): StudentDTO? {
-        check(!studentRepository.existsById(studentDTO.id))
+        if(studentRepository.existsById(studentDTO.id)) {
+            throw StudentAlreadyExistException(studentDTO.id)
+        }
         return studentRepository.save(studentDTO.toStudent().copy(id = null)).toDTO()
     }
 
-    override fun updateStudent(studentDTO: StudentDTO): StudentDTO? {
-        check(studentRepository.existsById(studentDTO.id))
-        //val course = studentRepository.findById(studentDTO.id).getOrNull()?.course ?: emptyList()
+    override fun updateStudent(studentDTO: StudentDTO): StudentDTO {
+        if (!studentRepository.existsById(studentDTO.id)) {
+            throw StudentNotFoundException(studentDTO.id)
+        }
         return studentRepository.save(studentDTO.toStudent().copy(id = studentDTO.id)).toDTO()
     }
 
@@ -76,6 +86,7 @@ class Runner(
         studentRepository.findAll(pageRequest).map { it.toDTO() }.forEach {
             println("id: ${it.id} -> fullName: ${it.firstName} ${it.lastName} -> gender: ${it.gender}")
         }
+
     }
 
 }

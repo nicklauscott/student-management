@@ -59,7 +59,7 @@ class StudentControllerTest  @Autowired constructor(
             "dateOfBirth": "1991-01-01T08:00:00",
             "gender": "FEMALE",
             "email": "greengreen@outlook.com",
-            "guardianMobile": "+1-761-245-3084",
+            "guardianMobile": "1234567890",
             "address": "",
             "enrollmentDate": "2025-03-29T21:37:15.693715",
             "program": "Fine Arts",
@@ -73,12 +73,30 @@ class StudentControllerTest  @Autowired constructor(
     }
 
     @Test
-    fun `test that enrollStudent returns HTTP 400 on an invalid request body`() {
+    fun `test that enrollStudent returns HTTP 400 on an invalid field in request body`() {
         every { studentService.saveStudent(any()) } answers { StudentDTO() }
         mockMvc.post("/v1/students") {
             contentType = MediaType.APPLICATION_JSON
             accept = MediaType.APPLICATION_JSON
+            content = """
+        {
+            "id": 1255,
+            "firstName": "Victoria",
+            "lastName": "Miller",
+            "dateOfBirth": "1991-01-01T08:00:00",
+            "gender": "FEMALE",
+            "email": "greengreen@outlook.com",
+            "guardianMobile": "invalid",
+            "address": "",
+            "enrollmentDate": "2025-03-29T21:37:15.693715",
+            "program": "Fine Arts",
+            "department": "Literature",
+            "status": "ACTIVE",
+            "course": []
+        }
+            """.trimIndent()
         }   .andExpect { status { isBadRequest() } }
+            .andExpect { content { contentType(MediaType.APPLICATION_JSON) } }
     }
 
     @Test
@@ -95,7 +113,7 @@ class StudentControllerTest  @Autowired constructor(
             "dateOfBirth": "1991-01-01T08:00:00",
             "gender": "FEMALE",
             "email": "greengreen@outlook.com",
-            "guardianMobile": "+1-761-245-3084",
+            "guardianMobile": "1234567890",
             "address": "",
             "enrollmentDate": "2025-03-29T21:37:15.693715",
             "program": "Fine Arts",

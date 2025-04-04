@@ -1,6 +1,10 @@
 package com.example.student.management.domain.entities
 
 import jakarta.persistence.*
+import jakarta.validation.constraints.Email
+import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Pattern
+import jakarta.validation.constraints.Size
 import java.time.LocalDateTime
 
 @Entity
@@ -12,10 +16,12 @@ data class Student(
 
     @Column(nullable = false) val firstName: String = "",
     @Column(nullable = false) val lastName: String = "",
-    val dateOfBirth: LocalDateTime = LocalDateTime.now(),
 
+    val dateOfBirth: LocalDateTime = LocalDateTime.now(),
     @Enumerated(EnumType.STRING) val gender: Gender = Gender.OTHER,
+
     val email: String = "",
+
     @Column(nullable = false) val guardianMobile: String = "",
     val address: String = "",
     val enrollmentDate: LocalDateTime = LocalDateTime.now(),
