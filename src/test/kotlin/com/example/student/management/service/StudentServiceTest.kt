@@ -145,7 +145,7 @@ class StudentServiceTest  @Autowired constructor (
     }
 
     @Test
-    fun `test that saveStudent will throw an exception if an exist user is passed in`() {
+    fun `test that saveStudent will throw an exception if an exist student is passed in`() {
         assertThrows<StudentAlreadyExistException> {
             // testStudentB was inserted on setUp so it now has the id = 1
             underTest.saveStudent(testStudentA().copy(id = 1))
@@ -198,13 +198,14 @@ class StudentServiceTest  @Autowired constructor (
     }
 
     @Test
-    fun `test that enrollStudentToCourse will doing nothing id the user id doesn't exist`() {
-        val newCourse = testCourseA().toDTO().copy(id = 3)
-        val updateStudent = underTest.enrollStudentToCourse(
-            3, // we already have two students in the database
-            listOf(newCourse)
-        )
-        assertThat(updateStudent).isNull()
+    fun `test that enrollStudentToCourse throws an exception if a student with the id doesn't exist`() {
+        assertThrows<StudentNotFoundException> {
+            val newCourse = testCourseA().toDTO().copy(id = 3)
+            underTest.enrollStudentToCourse(
+                3, // we already have two students in the database
+                listOf(newCourse)
+            )
+        }
     }
 
 
