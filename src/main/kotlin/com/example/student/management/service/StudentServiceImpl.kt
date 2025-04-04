@@ -46,6 +46,12 @@ class StudentServiceImpl(
         return studentRepository.save(studentDTO.toStudent().copy(id = null)).toDTO()
     }
 
+    override fun updateStudent(studentDTO: StudentDTO): StudentDTO? {
+        check(studentRepository.existsById(studentDTO.id))
+        //val course = studentRepository.findById(studentDTO.id).getOrNull()?.course ?: emptyList()
+        return studentRepository.save(studentDTO.toStudent().copy(id = studentDTO.id)).toDTO()
+    }
+
     @Transactional
     override fun enrollStudentToCourse(id: Long, courses: List<CourseDTO>): StudentDTO? {
         val student = studentRepository.findById(id).getOrNull() ?: return null
@@ -54,7 +60,6 @@ class StudentServiceImpl(
                 ?: courseRepository.save(courseDto.toCourse().copy(id = null)) // Save new courses if not found
         }
         val updatedCourses = student.course + courseEntities
-        //studentRepository.updateStudent(id, student.copy(course = updatedCourses))
         return studentRepository.save(student.copy(id = id, course = updatedCourses)).toDTO()
     }
 

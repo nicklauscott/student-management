@@ -82,6 +82,42 @@ class StudentControllerTest  @Autowired constructor(
     }
 
     @Test
+    fun `test that updateStudent returns HTTP 200 on a valid request body`() {
+        every { studentService.updateStudent(any()) } answers { StudentDTO() }
+        mockMvc.post("/v1/students/update") {
+            contentType = MediaType.APPLICATION_JSON
+            accept = MediaType.APPLICATION_JSON
+            content = """
+        {
+            "id": 1255,
+            "firstName": "Victoria",
+            "lastName": "Miller",
+            "dateOfBirth": "1991-01-01T08:00:00",
+            "gender": "FEMALE",
+            "email": "greengreen@outlook.com",
+            "guardianMobile": "+1-761-245-3084",
+            "address": "",
+            "enrollmentDate": "2025-03-29T21:37:15.693715",
+            "program": "Fine Arts",
+            "department": "Literature",
+            "status": "ACTIVE",
+            "course": []
+        }
+            """.trimIndent()
+        }   .andExpect { status { isOk() } }
+            .andExpect { content { contentType(MediaType.APPLICATION_JSON) } }
+    }
+
+    @Test
+    fun `test that updateStudent returns HTTP 400 on an invalid request body`() {
+        every { studentService.saveStudent(any()) } answers { StudentDTO() }
+        mockMvc.post("/v1/students/update") {
+            contentType = MediaType.APPLICATION_JSON
+            accept = MediaType.APPLICATION_JSON
+        }   .andExpect { status { isBadRequest() } }
+    }
+
+    @Test
     fun `test that enrollStudentToCourse returns HTTP 200 on valid id`() {
         // Note: We're using toLong() on the ID as shown in your controller
         every { studentService.enrollStudentToCourse(1, any()) } answers {

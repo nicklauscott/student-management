@@ -150,6 +150,25 @@ class StudentServiceTest  @Autowired constructor (
     }
 
 
+    // updateStudent
+    @Test
+    fun `test that updateStudent persist in the database`() {
+        val saveStudent = underTest.updateStudent(testStudentB().copy(id = 1, firstName = "Mark", lastName = "Lee"))
+        assertThat(saveStudent!!.id).isNotNull()
+        val recalledStudent = studentRepository.findByIdOrNull(saveStudent.id)
+        assertThat(recalledStudent).isNotNull
+        assertThat(recalledStudent?.toDTO()?.validate()).isEqualTo(
+            testStudentB().validate().copy(firstName = "Mark", lastName = "Lee")
+        )
+    }
+
+    @Test
+    fun `test that updateStudent throws an exception if no student with the given id do not exist`() {
+        assertThrows<IllegalStateException> {
+            underTest.updateStudent(testStudentB().copy(id = 3))
+        }
+    }
+
 
     // enrollStudentToCourse
     @Test

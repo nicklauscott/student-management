@@ -17,6 +17,8 @@ interface StudentService {
 
     fun saveStudent(studentDTO: StudentDTO): StudentDTO?
 
+    fun updateStudent(studentDTO: StudentDTO): StudentDTO?
+
     fun enrollStudentToCourse(id: Long, courses: List<CourseDTO>): StudentDTO?
 
 }

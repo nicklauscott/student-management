@@ -50,7 +50,16 @@ class StudentController(private val studentService: StudentService) {
         } catch (_: Exception) {
             ResponseEntity(HttpStatus.BAD_REQUEST)
         }
+    }
 
+    @PostMapping(path = ["/update"])
+    fun updateStudent(@RequestBody student: StudentDTO): ResponseEntity<StudentDTO> {
+        return try {
+            val newStudent = studentService.updateStudent(student)
+            ResponseEntity(newStudent, HttpStatus.OK)
+        } catch (_: Exception) {
+            ResponseEntity(HttpStatus.BAD_REQUEST)
+        }
     }
 
     @PostMapping(path = ["/{id}/courses"])
