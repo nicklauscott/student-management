@@ -63,11 +63,8 @@ class StudentServiceImpl(
     }
 
     @Transactional
-    override fun enrollStudentToCourse(id: Long, courses: List<CourseDTO>): StudentDTO {
-        if (!studentRepository.existsById(id)) {
-            throw StudentNotFoundException(id)
-        }
-        val student = studentRepository.findById(id).get()
+    override fun enrollStudentToCourse(id: Long, courses: List<CourseDTO>): StudentDTO? {
+        val student = studentRepository.findById(id).getOrNull() ?: return null
         val courseEntities = courses.map { courseDto ->
             courseRepository.findByIdOrNull(courseDto.id)
                 ?: courseRepository.save(courseDto.toCourse().copy(id = null)) // Save new courses if not found

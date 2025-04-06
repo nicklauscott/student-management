@@ -63,7 +63,9 @@ class StudentController(private val studentService: StudentService) {
 
     @PostMapping(path = ["/{id}/courses"])
     fun enrollStudentToCourse(@PathVariable("id") id: Int, @RequestBody courses: List<CourseDTO>): ResponseEntity<StudentDTO> {
-        return ResponseEntity(studentService.enrollStudentToCourse(id.toLong(), courses), HttpStatus.OK)
+        return studentService.enrollStudentToCourse(id.toLong(), courses)?.let {
+            ResponseEntity(it, HttpStatus.OK)
+        } ?: ResponseEntity(HttpStatus.BAD_REQUEST)
     }
 
 }
